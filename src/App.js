@@ -3,6 +3,7 @@ import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import Login from "./pages/login";
+import ProfileUser from "./pages/ProfileUser";
 import Register from "./pages/register";
 import RenderLayout from "./pages/RenderLayout";
 
@@ -12,9 +13,9 @@ const App = () => {
   const [token, setToken] = useState();
   useEffect(() => {
     if (!!Cookies.get().token) {
-      navigate('/home');
+      navigate("/home");
     } else {
-      navigate('/login')
+      navigate("/login");
     }
     // setToken(Cookies.get().token);
   }, []);
@@ -34,6 +35,7 @@ const App = () => {
 
       <Route path="/register" element={<Register />}></Route>
       <Route path="/home" element={<RenderLayout />}></Route>
+      <Route path="/home/profile" element={<ProfileUser />}></Route>
     </Routes>
   );
 };

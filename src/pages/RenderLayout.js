@@ -14,7 +14,7 @@ import Checkbox from "antd/lib/checkbox/Checkbox";
 import { Option } from "antd/lib/mentions";
 import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const { Header, Content, Footer } = Layout;
 
@@ -46,7 +46,7 @@ const RenderLayout = () => {
         "https://api-nodejs-todolist.herokuapp.com/task?limit=" +
           limitItem +
           "&skip=" +
-          currentPage,
+          (currentPage - 1) * 10,
         {
           headers: {
             Authorization: Cookies.get().token,
@@ -102,6 +102,22 @@ const RenderLayout = () => {
         "https://api-nodejs-todolist.herokuapp.com/task/" + record._id,
         {
           completed: !record.completed,
+        },
+        {
+          headers: {
+            Authorization: Cookies.get().token,
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then(() => fetchTodo());
+  };
+  const handleEditTodoName = (value, record) => {
+    axios
+      .put(
+        "https://api-nodejs-todolist.herokuapp.com/task/" + record._id,
+        {
+          description: value,
         },
         {
           headers: {
@@ -170,6 +186,14 @@ const RenderLayout = () => {
       title: "Content",
       dataIndex: "description",
       key: "description",
+      render: (record, a, index, c) => {
+        return (
+          <input
+            defaultValue={record}
+            onBlur={(e) => handleEditTodoName(e.target.value, a)}
+          ></input>
+        );
+      },
     },
     {
       title: "Created At",
@@ -204,7 +228,9 @@ const RenderLayout = () => {
           alignItems: "center",
         }}
       >
-        <p style={{ color: "white" }}>{userName}</p>
+        <p style={{ color: "white" }}>
+          <Link to={"profile"}>{userName}</Link>
+        </p>
         <Button onClick={() => delete_cookie("token")}>Logout</Button>
       </Header>
       <Content
