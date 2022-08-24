@@ -15,6 +15,9 @@ import { Option } from "antd/lib/mentions";
 import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import AuthenticationService from "../services/AuthenticationServices";
+import TodoService from "../services/TodoServices";
+import UserService from "../services/UserServices";
 
 const { Header, Content, Footer } = Layout;
 
@@ -31,63 +34,33 @@ const RenderLayout = () => {
   });
 
   const fetchTotalItem = () => {
-    axios
-      .get("https://api-nodejs-todolist.herokuapp.com/task", {
-        headers: {
-          Authorization: Cookies.get().token,
-        },
-      })
-      .then((res) => setPagination({ ...pagination, total: res.data.count }));
+    TodoService.getAllItems().then((res) =>
+      setPagination({ ...pagination, total: res.data.count })
+    );
   };
   const fetchTodo = (limitItem, currentPage) => {
     setLoading(true);
-    axios
-      .get(
-        "https://api-nodejs-todolist.herokuapp.com/task?limit=" +
-          limitItem +
-          "&skip=" +
-          (currentPage - 1) * 10,
-        {
-          headers: {
-            Authorization: Cookies.get().token,
-          },
-        }
-      )
-      .then((res) => {
-        setTodoList(res.data.data);
-        setLoading(false);
-      });
+    TodoService.getAllItems({
+      limit: limitItem,
+      skip: (currentPage - 1) * 10,
+    }).then((res) => {
+      setTodoList(res.data.data);
+      setLoading(false);
+    });
   };
   useEffect(() => {
-    axios
-      .get("https://api-nodejs-todolist.herokuapp.com/user/me", {
-        headers: {
-          Authorization: Cookies.get().token,
-        },
-      })
-      .then((res) => setUserName(res.data.name));
+    UserService.getCurrentUser().then((res) => setUserName(res.data.name));
     fetchTotalItem();
     fetchTodo(10, 1);
   }, []);
 
   const onFinish = (value) => {
-    axios
-      .post(
-        "https://api-nodejs-todolist.herokuapp.com/task",
-        {
-          description: value.content.toString(),
-        },
-        {
-          headers: {
-            Authorization: Cookies.get().token,
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      .then((res) => {
-        fetchTodo();
-        fetchTotalItem();
-      });
+    TodoService.addTodo({
+      description: value.content.toString(),
+    }).then((res) => {
+      fetchTodo();
+      fetchTotalItem();
+    });
     setIsModalVisible(false);
   };
   const showModal = () => {
@@ -97,59 +70,25 @@ const RenderLayout = () => {
     setIsModalVisible(false);
   };
   const setStatus = (record, index) => {
-    axios
-      .put(
-        "https://api-nodejs-todolist.herokuapp.com/task/" + record._id,
-        {
-          completed: !record.completed,
-        },
-        {
-          headers: {
-            Authorization: Cookies.get().token,
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      .then(() => fetchTodo());
+    TodoService.editTodo(record._id, {
+      completed: !record.completed,
+    }).then(() => fetchTodo());
   };
   const handleEditTodoName = (value, record) => {
-    axios
-      .put(
-        "https://api-nodejs-todolist.herokuapp.com/task/" + record._id,
-        {
-          description: value,
-        },
-        {
-          headers: {
-            Authorization: Cookies.get().token,
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      .then(() => fetchTodo());
+    TodoService.editTodo(record._id, {
+      description: value,
+    }).then(() => fetchTodo());
   };
   const deleteTodo = (record, index) => {
-    axios
-      .delete("https://api-nodejs-todolist.herokuapp.com/task/" + record._id, {
-        headers: {
-          Authorization: Cookies.get().token,
-          "Content-Type": "application/json",
-        },
-      })
-      .then(() => {
-        fetchTodo();
-        fetchTotalItem();
-      });
+    TodoService.dropTodo(record._id).then(() => {
+      fetchTodo();
+      fetchTotalItem();
+    });
   };
   function delete_cookie(name) {
     document.cookie =
       name + "=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-    axios.post("https://api-nodejs-todolist.herokuapp.com/user/logout", {
-      headers: {
-        Authorization: Cookies.get().token,
-      },
-    });
-    navigate("/login");
+    AuthenticationService.logOutRequest().then(() => navigate("/login"));
   }
   const handleTableChange = (newPagination, filters, sorter) => {
     fetchTodo(newPagination.pageSize, newPagination.current);
@@ -163,16 +102,10 @@ const RenderLayout = () => {
   };
   const handleFilterTable = (e) => {
     if (e !== "")
-      axios
-        .get("https://api-nodejs-todolist.herokuapp.com/task?completed=" + e, {
-          headers: {
-            Authorization: Cookies.get().token,
-          },
-        })
-        .then((res) => {
-          setTodoList(res.data.data);
-          setLoading(false);
-        });
+      TodoService.getAllItems({ completed: true }).then((res) => {
+        setTodoList(res.data.data);
+        setLoading(false);
+      });
     else fetchTodo(10, 1);
   };
 

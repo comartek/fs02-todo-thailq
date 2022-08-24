@@ -4,29 +4,21 @@ import "antd/dist/antd.css";
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import AuthenServices from "../services/AuthenticationServices";
 
 function Register() {
   const [password, setPassword] = useState();
   const navigate = useNavigate();
   const onFinish = async (values) => {
-    await axios
-      .post(
-        "https://api-nodejs-todolist.herokuapp.com/user/register",
-        {
-          name: values.email.split("@")[0],
-          email: values.email,
-          password: values.password,
-          age: 20,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      )
+    await AuthenServices.registerRequest({
+      name: values.email.split("@")[0],
+      email: values.email,
+      password: values.password,
+      age: 20,
+    })
       .then((res) => {
         openNotification(res.statusText);
-        navigate('/login')
+        navigate("/login");
       })
       .catch(function (error) {
         openNotification(error.response.data);

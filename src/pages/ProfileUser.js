@@ -7,6 +7,7 @@ import { trim } from "lodash";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardBody, Row } from "reactstrap";
+import UserService from "../services/UserServices";
 
 function ProfileUser() {
   const [imageUrl, setImageUrl] = useState("");
@@ -20,33 +21,17 @@ function ProfileUser() {
       span: 24,
     },
   };
-  const fetchProfile = () => {
-    axios
-      .get(
-        "https://api-nodejs-todolist.herokuapp.com/user/me",
-
-        {
-          headers: {
-            Authorization: Cookies.get().token,
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      .then((res) => setUserLogged(res.data));
-  };
   const fetchImg = () => {
-    axios
-      .get(
-        `https://api-nodejs-todolist.herokuapp.com/user/${userLogged._id}/avatar`
-      )
-      .then((res) => setImageUrl(res));
+    UserService.fetchImg(userLogged._id);
+  };
+  const fetchProfile = () => {
+    UserService.getCurrentUser().then((res) => setUserLogged(res.data));
   };
   useEffect(() => {
     fetchProfile();
   }, []);
   useEffect(() => {
     if (userLogged !== undefined) {
-      fetchImg();
     }
   }, [userLogged]);
 
@@ -79,30 +64,12 @@ function ProfileUser() {
         }
       )
       .then(() => {
-        fetchImg();
         fetchProfile();
+        fetchImg();
       });
     return isJpgOrPng && isLt2M;
   };
-  const handleUploadImg = (e) => {
-    let file = e.target.files[0];
-    var bodyFormData = new FormData();
-    bodyFormData.append("avatar", file);
-    axios
-      .post(
-        "https://api-nodejs-todolist.herokuapp.com/user/me/avatar",
-        bodyFormData,
-        {
-          headers: {
-            Authorization: Cookies.get().token,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      )
-      .then((res) => {
-        fetchProfile();
-      });
-  };
+
   const uploadButton = (
     <div>
       <PlusOutlined />

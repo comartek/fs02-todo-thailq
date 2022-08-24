@@ -5,15 +5,12 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import AuthenServices from "../services/AuthenticationServices";
 
 function Login() {
   const navigate = useNavigate();
   const onFinish = async (values) => {
-    await axios
-      .post("https://api-nodejs-todolist.herokuapp.com/user/login", {
-        email: values.email,
-        password: values.password,
-      })
+    await AuthenServices.loginRequest(values)
       .then((res) => {
         document.cookie = "token=" + res.data.token;
         openNotification(res.statusText);
