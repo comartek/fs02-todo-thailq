@@ -31,8 +31,7 @@ const RenderLayout = () => {
       limit: limitItem,
       skip: (currentPage - 1) * 10,
     }).then((res) => {
-      setTodoList(res.data.data);
-      setLoading(false);
+      setTodoList(res.data.data).then(() => setLoading(false));
     });
   };
   useEffect(() => {
