@@ -1,4 +1,4 @@
-import { deleteMethod, get, post, postFile } from "./AxiosHelper";
+import { get, postFile, putUser } from "./AxiosHelper";
 
 const UserService = {
   getCurrentUser() {
@@ -9,6 +9,9 @@ const UserService = {
   },
   fetchImg(id) {
     return get("/user/" + id + "/avatar");
+  },
+  settingProfile(data) {
+    return putUser("/user/me", data);
   },
 };
 

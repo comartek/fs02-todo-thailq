@@ -4,14 +4,15 @@ import "antd/dist/antd.css";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { trim } from "lodash";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardBody, Row } from "reactstrap";
 import UserService from "../services/UserServices";
+import { useGetCurrentUserInfo } from "../hooks/Customhook";
 
 function ProfileUser() {
   const [imageUrl, setImageUrl] = useState("");
-  const [userLogged, setUserLogged] = useState();
+  const userLogged = useGetCurrentUserInfo();
   const [form] = Form.useForm();
   const layout = {
     labelCol: {
@@ -23,19 +24,9 @@ function ProfileUser() {
   };
   const fetchImg = () => {
     UserService.fetchImg(userLogged._id);
+    return `https://api-nodejs-todolist.herokuapp.com/user/${userLogged._id}/avatar`;
   };
-  const fetchProfile = () => {
-    UserService.getCurrentUser().then((res) => setUserLogged(res.data));
-  };
-  useEffect(() => {
-    fetchProfile();
-  }, []);
-  useEffect(() => {
-    if (userLogged !== undefined) {
-    }
-  }, [userLogged]);
 
-  const onFinish = async (values) => {};
   const beforeUpload = (file) => {
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
 
@@ -52,21 +43,7 @@ function ProfileUser() {
     }
     var bodyFormData = new FormData();
     bodyFormData.append("avatar", file);
-    axios
-      .post(
-        "https://api-nodejs-todolist.herokuapp.com/user/me/avatar",
-        bodyFormData,
-        {
-          headers: {
-            Authorization: Cookies.get().token,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      )
-      .then(() => {
-        fetchProfile();
-        fetchImg();
-      });
+    UserService.postAvatar(bodyFormData).then(() => fetchImg());
     return isJpgOrPng && isLt2M;
   };
 
@@ -98,18 +75,7 @@ function ProfileUser() {
   //     //   );
   //   };
   const handleSettingProfile = (value) => {
-    axios.put(
-      "https://api-nodejs-todolist.herokuapp.com/user/me",
-      {
-        age: value,
-      },
-      {
-        headers: {
-          Authorization: Cookies.get().token,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    UserService.settingProfile(value);
   };
 
   if (userLogged === undefined) {
@@ -123,7 +89,7 @@ function ProfileUser() {
             {...layout}
             name="nest-messages"
             form={form}
-            onFinish={onFinish}
+            // onFinish={onFinish}
           >
             <Row>
               <Col lg={24} md={24} sm={24} xs={24}>
@@ -235,7 +201,7 @@ function ProfileUser() {
                       showUploadList={false}
                       action="http://localhost:3000/"
                       beforeUpload={beforeUpload}
-                      //   onChange={handleChange}
+                      accept="image/jpg, image/png"
                     >
                       {imageUrl ? (
                         <img
@@ -282,4 +248,4 @@ function ProfileUser() {
   );
 }
 
-export default ProfileUser;
+export default memo(ProfileUser);

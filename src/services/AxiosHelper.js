@@ -1,9 +1,9 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 export const baseUrl = "https://api-nodejs-todolist.herokuapp.com";
+const token = Cookies.get().token;
 
 export const get = (path, params) => {
-  const token = Cookies.get().token;
   if (params !== undefined) {
     if (params instanceof Object) {
       path +=
@@ -34,7 +34,6 @@ export const get = (path, params) => {
 };
 
 export const post = (path, postData) => {
-  const token = localStorage.getItem("token");
   return axios
     .post(baseUrl + path, postData, {
       headers: {
@@ -56,7 +55,6 @@ export const post = (path, postData) => {
 };
 
 export const postFile = (path, postData) => {
-  const token = localStorage.getItem("token");
   return axios
     .post(baseUrl + path, postData, {
       headers: {
@@ -78,7 +76,6 @@ export const postFile = (path, postData) => {
 };
 
 export const deleteMethod = (path, id) => {
-  const token = localStorage.getItem("token");
   return axios
     .delete(baseUrl + path + "?id=" + id, {
       headers: {
@@ -94,6 +91,46 @@ export const deleteMethod = (path, id) => {
     .catch((err) => {
       // handleErr(err)
       console.log(err);
+    });
+};
+export const put = (path, id, postData) => {
+  return axios
+    .put(baseUrl + path + `/${id}`, postData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((res) => {
+      return new Promise((resolve) => {
+        resolve(res);
+      });
+    })
+    .catch((err) => {
+      // handleErr(err)
+      return new Promise((resolve) => {
+        resolve(err.response);
+      });
+    });
+};
+export const putUser = (path, id, postData) => {
+  return axios
+    .put(baseUrl + path, postData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((res) => {
+      return new Promise((resolve) => {
+        resolve(res);
+      });
+    })
+    .catch((err) => {
+      // handleErr(err)
+      return new Promise((resolve) => {
+        resolve(err.response);
+      });
     });
 };
 

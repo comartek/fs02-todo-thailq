@@ -1,4 +1,4 @@
-import { deleteMethod, get, post } from "./AxiosHelper";
+import { deleteMethod, get, post, put } from "./AxiosHelper";
 
 const TodoService = {
   getAllItems(params) {
@@ -8,10 +8,7 @@ const TodoService = {
     return post("/task", data);
   },
   editTodo(id, data) {
-    return post("/user/editstudent/" + id, data);
-  },
-  getStudentDetail(id) {
-    return get("/user/getstudentdetail", id);
+    return put("/task/", id, data);
   },
   dropTodo(id) {
     return deleteMethod("/task", id);

@@ -58,7 +58,7 @@ const RenderLayout = () => {
     TodoService.addTodo({
       description: value.content.toString(),
     }).then((res) => {
-      fetchTodo();
+      fetchTodo(10, 1);
       fetchTotalItem();
     });
     setIsModalVisible(false);
@@ -69,19 +69,19 @@ const RenderLayout = () => {
   const handleCancel = () => {
     setIsModalVisible(false);
   };
-  const setStatus = (record, index) => {
+  const setStatus = (record) => {
     TodoService.editTodo(record._id, {
       completed: !record.completed,
-    }).then(() => fetchTodo());
+    }).then(() => fetchTodo(10, 1));
   };
   const handleEditTodoName = (value, record) => {
     TodoService.editTodo(record._id, {
       description: value,
-    }).then(() => fetchTodo());
+    }).then(() => fetchTodo(10, 1));
   };
   const deleteTodo = (record, index) => {
     TodoService.dropTodo(record._id).then(() => {
-      fetchTodo();
+      fetchTodo(10, 1);
       fetchTotalItem();
     });
   };
