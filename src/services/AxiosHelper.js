@@ -117,7 +117,7 @@ export const putUser = (path, id, postData) => {
   return axios
     .put(baseUrl + path, postData, {
       headers: {
-        "Content-Type": "multipart/form-data",
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     })
