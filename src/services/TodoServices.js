@@ -8,7 +8,7 @@ const TodoService = {
     return post("/task", data);
   },
   editTodo(id, data) {
-    return put("/task/", id, data);
+    return put("/task", id, data);
   },
   dropTodo(id) {
     return deleteMethod("/task", id);

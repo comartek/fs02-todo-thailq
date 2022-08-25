@@ -24,7 +24,7 @@ function ProfileUser() {
   };
   const fetchImg = () => {
     UserService.fetchImg(userLogged._id);
-    return `https://api-nodejs-todolist.herokuapp.com/user/${userLogged._id}/avatar`;
+    // return `https://api-nodejs-todolist.herokuapp.com/user/${userLogged._id}/avatar`;
   };
 
   const beforeUpload = (file) => {
