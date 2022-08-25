@@ -31,7 +31,8 @@ const RenderLayout = () => {
       limit: limitItem,
       skip: (currentPage - 1) * 10,
     }).then((res) => {
-      setTodoList(res.data.data).then(() => setLoading(false));
+      setTodoList(res.data.data);
+      setLoading(false);
     });
   };
   useEffect(() => {
@@ -44,7 +45,7 @@ const RenderLayout = () => {
     TodoService.addTodo({
       description: value.content.toString(),
     }).then((res) => {
-      fetchTodo(10, 1);
+      fetchTodo(pagination.pageSize, pagination.current);
       fetchTotalItem();
     });
     setIsModalVisible(false);
@@ -58,16 +59,16 @@ const RenderLayout = () => {
   const setStatus = (record) => {
     TodoService.editTodo(record._id, {
       completed: !record.completed,
-    }).then(() => fetchTodo(10, 1));
+    }).then(() => fetchTodo(pagination.pageSize, pagination.current));
   };
   const handleEditTodoName = (value, record) => {
     TodoService.editTodo(record._id, {
       description: value,
-    }).then(() => fetchTodo(10, 1));
+    }).then(() => fetchTodo(pagination.pageSize, pagination.current));
   };
   const deleteTodo = (record, index) => {
     TodoService.dropTodo(record._id).then(() => {
-      fetchTodo(10, 1);
+      fetchTodo(pagination.pageSize, pagination.current);
       fetchTotalItem();
     });
   };
