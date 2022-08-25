@@ -1,18 +1,6 @@
-import {
-  Button,
-  Form,
-  Input,
-  Layout,
-  Modal,
-  Radio,
-  Select,
-  Space,
-  Table,
-} from "antd";
+import { Button, Form, Input, Layout, Modal, Select, Space, Table } from "antd";
 import "antd/dist/antd.css";
-import Checkbox from "antd/lib/checkbox/Checkbox";
 import { Option } from "antd/lib/mentions";
-import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthenticationService from "../services/AuthenticationServices";
@@ -24,7 +12,6 @@ const { Header, Content, Footer } = Layout;
 const RenderLayout = () => {
   const [userName, setUserName] = useState();
   const [loading, setLoading] = useState(false);
-  const axios = require("axios").default;
   const navigate = useNavigate();
   const [todoList, setTodoList] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -90,25 +77,10 @@ const RenderLayout = () => {
       name + "=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
     AuthenticationService.logOutRequest().then(() => navigate("/login"));
   }
-  const handleTableChange = (newPagination, filters, sorter) => {
+  const handleTableChange = (newPagination) => {
     fetchTodo(newPagination.pageSize, newPagination.current);
     setPagination({ ...pagination, current: newPagination.current });
-    // fetchData({
-    //   sortField: sorter.field,
-    //   sortOrder: sorter.order,
-    //   pagination: newPagination,
-    //   ...filters,
-    // });
   };
-  const handleFilterTable = (e) => {
-    if (e !== "")
-      TodoService.getAllItems({ completed: true }).then((res) => {
-        setTodoList(res.data.data);
-        setLoading(false);
-      });
-    else fetchTodo(10, 1);
-  };
-
   const columns = [
     {
       title: "ID",
@@ -137,7 +109,18 @@ const RenderLayout = () => {
       title: "Status",
       dataIndex: "completed",
       key: "completed",
+      filters: [
+        {
+          text: "Chưa Hoàn Thành",
+          value: "false",
+        },
+        {
+          text: "Đã Hoàn Thành",
+          value: "true",
+        },
+      ],
       render: (item) => (item ? "đã hoàn thành" : "chưa hoàn thành"),
+      onFilter: (value, record) => record.completed.toString() === value,
     },
     {
       title: "Action",
@@ -152,6 +135,7 @@ const RenderLayout = () => {
       ),
     },
   ];
+
   return (
     <Layout className="layout">
       <Header
@@ -174,17 +158,7 @@ const RenderLayout = () => {
         <Button type="primary flex justify-end mt-3 mb-3" onClick={showModal}>
           Add
         </Button>
-        <Select
-          defaultValue="All"
-          style={{
-            width: 120,
-          }}
-          onChange={(value) => handleFilterTable(value)}
-        >
-          <Option>All</Option>
-          <Option value="true">Complete</Option>
-          <Option value="false">not Done</Option>
-        </Select>
+
         <Modal
           footer={<></>}
           title="Add To Do"

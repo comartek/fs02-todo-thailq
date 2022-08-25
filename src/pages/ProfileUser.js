@@ -22,11 +22,25 @@ function ProfileUser() {
       span: 24,
     },
   };
+
+  useEffect(() => {
+    if (userLogged !== undefined) {
+      setImageUrl(
+        `https://api-nodejs-todolist.herokuapp.com/user/${
+          userLogged._id
+        }/avatar?${new Date().getTime()}}`
+      );
+    }
+  }, [userLogged]);
+
   const fetchImg = () => {
     UserService.fetchImg(userLogged._id);
-    // return `https://api-nodejs-todolist.herokuapp.com/user/${userLogged._id}/avatar`;
+    setImageUrl(
+      `https://api-nodejs-todolist.herokuapp.com/user/${
+        userLogged._id
+      }/avatar?${new Date().getTime()}}`
+    );
   };
-
   const beforeUpload = (file) => {
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
 
@@ -44,6 +58,7 @@ function ProfileUser() {
     var bodyFormData = new FormData();
     bodyFormData.append("avatar", file);
     UserService.postAvatar(bodyFormData).then(() => fetchImg());
+
     return isJpgOrPng && isLt2M;
   };
 
@@ -59,28 +74,14 @@ function ProfileUser() {
       </div>
     </div>
   );
-  //   const handleChange = (info) => {
-  //     console.log(info)
-  //     // axios.put(
-  //     //     "https://api-nodejs-todolist.herokuapp.com/user/me",
-  //     //     {
-  //     //       age: value,
-  //     //     },
-  //     //     {
-  //     //       headers: {
-  //     //         Authorization: Cookies.get().token,
-  //     //         "Content-Type": "application/json",
-  //     //       },
-  //     //     }
-  //     //   );
-  //   };
   const handleSettingProfile = (value) => {
-    UserService.settingProfile(value);
+    UserService.settingProfile({ age: value });
   };
 
   if (userLogged === undefined) {
     return;
   }
+
   return (
     <Col lg="5" md="7" style={{ display: "flex", justifyContent: "center" }}>
       <Card className="bg-secondary shadow border-0">
@@ -206,7 +207,7 @@ function ProfileUser() {
                       {imageUrl ? (
                         <img
                           key={Date.now()}
-                          src={`https://api-nodejs-todolist.herokuapp.com/user/${userLogged._id}/avatar`}
+                          src={imageUrl}
                           alt="avatar"
                           style={{
                             width: "100%",
@@ -220,11 +221,7 @@ function ProfileUser() {
                   <Col lg={1}></Col>
                   <Col lg={16} md={24} sm={24} xs={24}>
                     <h3>Preview</h3>
-                    <Avatar
-                      key={Date.now()}
-                      src={`https://api-nodejs-todolist.herokuapp.com/user/${userLogged._id}/avatar`}
-                      size={300}
-                    ></Avatar>
+                    <Avatar key={Date.now()} src={imageUrl} size={300}></Avatar>
                   </Col>
                 </Row>
               </Col>
