@@ -19,6 +19,7 @@ const RenderLayout = () => {
     current: 1,
     pageSize: 10,
   });
+  const [nameFilter, setNameFilter] = useState([]);
 
   const fetchTotalItem = () => {
     TodoService.getAllItems().then((res) =>
@@ -81,6 +82,7 @@ const RenderLayout = () => {
     fetchTodo(newPagination.pageSize, newPagination.current);
     setPagination({ ...pagination, current: newPagination.current });
   };
+
   const columns = [
     {
       title: "ID",
@@ -121,6 +123,7 @@ const RenderLayout = () => {
       ],
       render: (item) => (item ? "đã hoàn thành" : "chưa hoàn thành"),
       onFilter: (value, record) => record.completed.toString() === value,
+      filteredValue: nameFilter,
     },
     {
       title: "Action",
@@ -158,7 +161,11 @@ const RenderLayout = () => {
         <Button type="primary flex justify-end mt-3 mb-3" onClick={showModal}>
           Add
         </Button>
-
+        <Button onClick={() => setNameFilter(["true"])}>Đã Hoàn Thành</Button>
+        <Button onClick={() => setNameFilter(["false"])}>
+          Chưa Hoàn Thành
+        </Button>
+        <Button onClick={() => setNameFilter(["false", "true"])}>Tất cả</Button>
         <Modal
           footer={<></>}
           title="Add To Do"
