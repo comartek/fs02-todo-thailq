@@ -161,11 +161,12 @@ const RenderLayout = () => {
         <Button type="primary flex justify-end mt-3 mb-3" onClick={showModal}>
           Add
         </Button>
+        <Button onClick={() => setNameFilter(["false", "true"])}>Tất cả</Button>
         <Button onClick={() => setNameFilter(["true"])}>Đã Hoàn Thành</Button>
         <Button onClick={() => setNameFilter(["false"])}>
           Chưa Hoàn Thành
         </Button>
-        <Button onClick={() => setNameFilter(["false", "true"])}>Tất cả</Button>
+
         <Modal
           footer={<></>}
           title="Add To Do"
