@@ -21,7 +21,7 @@ function Login() {
       });
   };
   const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
+    openNotification("Failed:", errorInfo);
   };
   const openNotification = (mess) => {
     notification.open({
